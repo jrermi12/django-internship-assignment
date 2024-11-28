@@ -80,3 +80,28 @@ def forgot_password_view(request):
             messages.error(request, "No user found with this email.")
 
     return render(request, 'userAuth/forgot_password.html')
+
+
+def reset_password_view(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError, TypeError):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            password = request.POST['password']
+            confirm_password = request.POST['confirm_password']
+
+            if password != confirm_password:
+                messages.error(request, "Passwords do not match.")
+            else:
+                user.set_password(password)
+                user.save()
+                messages.success(request, "Your password has been reset successfully.")
+                return redirect('login')
+
+        return render(request, 'userAuth/reset_password.html', {'validlink': True})
+    else:
+        return render(request, 'userAuth/reset_password.html', {'validlink': False})
