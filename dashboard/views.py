@@ -1,11 +1,12 @@
 from django.shortcuts import render,redirect
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def login_view(request):
@@ -105,3 +106,22 @@ def reset_password_view(request, uidb64, token):
         return render(request, 'userAuth/reset_password.html', {'validlink': True})
     else:
         return render(request, 'userAuth/reset_password.html', {'validlink': False})
+    
+
+@login_required
+def dashboard_view(request):
+    return render(request, 'userAuth/dashboard.html', {'user': request.user})
+
+@login_required
+def profile_view(request):
+    return render(request, 'userAuth/profile.html', {'user': request.user})
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+def home_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    else:
+        return redirect('login')
