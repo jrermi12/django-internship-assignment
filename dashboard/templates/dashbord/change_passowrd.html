@@ -1,0 +1,15 @@
+{% extends 'userAuth/base.html' %}
+{% block title %}Change Password{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class="title">Change Password</h2>
+    <form method="POST" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button">Change Password</button>
+    </form>
+    <div class="text-center mt-4">
+        <a href="{% url 'dashboard' %}" class="link">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
