@@ -1,0 +1,25 @@
+{% extends 'userAuth/base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class="title">Login</h2>
+    <form method="POST" class="form">
+        {% csrf_token %}
+        <div>
+            <label for="username" class="label">Username</label>
+            <input type="text" id="username" name="username" class="input">
+        </div>
+        <div>
+            <label for="password" class="label">Password</label>
+            <input type="password" id="password" name="password" class="input">
+        </div>
+        <div class="text-center">
+            <button type="submit" class="button">Login</button>
+        </div>
+    </form>
+    <div class="text-center mt-4">
+        <a href="{% url 'signup' %}" class="link">Sign Up</a> | 
+        <a href="{% url 'forgot_password' %}" class="link">Forgot Password?</a>
+    </div>
+</div>
+{% endblock %}
