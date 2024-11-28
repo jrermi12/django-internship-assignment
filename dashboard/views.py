@@ -1,12 +1,13 @@
-from django.shortcuts import render,redirect
-from django.contrib import messages
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
-from django.core.mail import send_mail
-from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 def login_view(request):
@@ -18,7 +19,7 @@ def login_view(request):
             password = request.POST['password']
         except KeyError:
             messages.error(request, 'Please provide both username and password.')
-            return render(request, 'userAuth/login.html')
+            return render(request, 'dashboard/login.html')
 
         user = authenticate(request, username=username, password=password)
 
@@ -28,7 +29,7 @@ def login_view(request):
         else:
             messages.error(request, 'Invalid username or password.')
 
-    return render(request, 'userAuth/login.html')
+    return render(request, 'dashboard/login.html')
 
 
 
@@ -41,21 +42,21 @@ def signup_view(request):
 
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
-            return render(request, 'userAuth/signup.html')
+            return render(request, 'dashboard/signup.html')
 
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already taken.")
-            return render(request, 'userAuth/signup.html')
+            return render(request, 'dashboard/signup.html')
         if User.objects.filter(email=email).exists():
             messages.error(request, "Email already registered.")
-            return render(request, 'userAuth/signup.html')
+            return render(request, 'dashboard/signup.html')
 
         user = User.objects.create_user(username=username, email=email, password=password)
         login(request, user) 
         messages.success(request, "Account created successfully!")
         return redirect('dashboard')
 
-    return render(request, 'userAuth/signup.html')
+    return render(request, 'dashboard/signup.html')
 
 
 
@@ -80,7 +81,7 @@ def forgot_password_view(request):
         except User.DoesNotExist:
             messages.error(request, "No user found with this email.")
 
-    return render(request, 'userAuth/forgot_password.html')
+    return render(request, 'dashboard/forgot_password.html')
 
 
 def reset_password_view(request, uidb64, token):
@@ -103,18 +104,18 @@ def reset_password_view(request, uidb64, token):
                 messages.success(request, "Your password has been reset successfully.")
                 return redirect('login')
 
-        return render(request, 'userAuth/reset_password.html', {'validlink': True})
+        return render(request, 'dashboard/reset_password.html', {'validlink': True})
     else:
-        return render(request, 'userAuth/reset_password.html', {'validlink': False})
+        return render(request, 'dashboard/reset_password.html', {'validlink': False})
     
 
 @login_required
 def dashboard_view(request):
-    return render(request, 'userAuth/dashboard.html', {'user': request.user})
+    return render(request, 'dashboard/dashboard.html', {'user': request.user})
 
 @login_required
 def profile_view(request):
-    return render(request, 'userAuth/profile.html', {'user': request.user})
+    return render(request, 'dashboard/profile.html', {'user': request.user})
 
 def logout_view(request):
     logout(request)
