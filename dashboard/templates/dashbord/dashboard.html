@@ -1,0 +1,28 @@
+{% extends 'userAuth/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class="title">Welcome, {{ user.username }}!</h2>
+    <div class="stats">
+        <h3>User Statistics</h3>
+        <ul>
+            <li>Last Login: {{ user.last_login }}</li>
+        </ul>
+    </div>
+    <div class="recent-activities">
+        <h3>Recent Activities</h3>
+        <ul>
+            {% for activity in user.recent_activities %}
+                <li>{{ activity }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="text-center mt-4">
+        <ul class="inline-list">
+            <li><a href="{% url 'profile' %}" class="link">View Profile</a></li>
+            <li><a href="{% url 'change_password' %}" class="link">Change Password</a></li>
+            <li><a href="{% url 'logout' %}" class="link">Logout</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

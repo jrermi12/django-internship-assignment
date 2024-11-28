@@ -1,0 +1,14 @@
+{% extends 'userAuth/base.html' %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class="title">Profile</h2>
+    <div class="form">
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
+    <div class="text-center mt-6">
+        <a href="{% url 'dashboard' %}" class="link">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}
