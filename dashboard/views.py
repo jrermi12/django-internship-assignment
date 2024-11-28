@@ -2,6 +2,10 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.core.mail import send_mail
 
 # Create your views here.
 def login_view(request):
@@ -51,3 +55,28 @@ def signup_view(request):
         return redirect('dashboard')
 
     return render(request, 'userAuth/signup.html')
+
+
+
+def forgot_password_view(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+
+        try:
+            user = User.objects.get(email=email)
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_link = request.build_absolute_uri(f'/reset-password/{uid}/{token}/')
+
+            send_mail(
+                'Password Reset Request',
+                f'Click the link below to reset your password:\n{reset_link}',
+                'noreply@example.com',
+                [email],
+                fail_silently=False,
+            )
+            messages.success(request, "Password reset link sent to your email.")
+        except User.DoesNotExist:
+            messages.error(request, "No user found with this email.")
+
+    return render(request, 'userAuth/forgot_password.html')
